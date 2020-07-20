@@ -2,17 +2,16 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-#histogram normalization
-def hist_normalization(img,a,b):
-    c = img.min()
-    d = img.max()
-    print(c,d)
+#histogram manipulation
+def hist_maniplation(img,m0,s0):
+    m = np.mean(img)
+    s = np.std(img)
 
     out = img.copy()
 
-    out = (b - a) / (d -c) * (out - c) + a
-    out[out < a] = a
-    out[out > b] = b
+    out = s0 / s * (out - m) + m0
+    out[out < 0] = 0
+    out[out > 255] = 255
 
     out = out.astype(np.uint8)
 
@@ -20,14 +19,14 @@ def hist_normalization(img,a,b):
 
 img = cv2.imread("imori_dark.jpg").astype(np.float)
 
-out = hist_normalization(img, 0, 255)
+out = hist_maniplation(img, 128, 52)
 
 # Display histogram
 plt.hist(out.ravel(), bins=255, rwidth=0.8, range=(0, 255))
-plt.savefig("answer_21_2.png")
+plt.savefig("answer_22_2.png")
 plt.show()
 
 # Save result
 cv2.imshow("result", out)
 cv2.waitKey(0)
-cv2.imwrite("answer_21_1.jpg", out)
+cv2.imwrite("answer_22_1.jpg", out)
