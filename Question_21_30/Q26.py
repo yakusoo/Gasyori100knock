@@ -19,10 +19,13 @@ def BL_interpolation(img, ax=1.5, ay=1.5):
     ix = np.floor(x).astype(np.int)
     iy = np.floor(y).astype(np.int)
     print(ix.shape)
+    print(ix)
 
     ix = np.minimum(ix, W-2)
     iy = np.minimum(iy, H-2)
     print(ix.shape)
+    print(ix)
+    print(W-2)
 
 	# get distance
     dx = x - ix
