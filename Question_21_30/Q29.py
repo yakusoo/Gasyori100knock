@@ -38,9 +38,20 @@ def affine(img, a, b, c, d, tx, ty):
 _img = cv2.imread("imori.jpg").astype(np.float32)
 
 # Affine
-out = affine(_img, a=1, b=0, c=0, d=1, tx=30, ty=-30)
+out = affine(_img, a=1.3, b=0, c=0, d=0.8, tx=0, ty=0)
+out2 = affine(_img, a=1, b=0, c=0, d=1, tx=30, ty=-30)
 
 # Save result
-cv2.imshow("result", out)
-cv2.waitKey(0)
-cv2.imwrite("answer_28.jpg", out)
+cv2.imwrite("answer_29_1.jpg", out)
+cv2.imshow("answer_29_1", out)
+while cv2.waitKey(100) != 27:# loop if not get ESC
+    if cv2.getWindowProperty('answer_29_1',cv2.WND_PROP_VISIBLE) <= 0:
+        break
+cv2.destroyWindow('answer_29_1')
+cv2.imwrite("answer_29_2.jpg", out2)
+cv2.imshow("answer_29_2", out2)
+while cv2.waitKey(100) != 27:# loop if not get ESC
+    if cv2.getWindowProperty('answer_29_2',cv2.WND_PROP_VISIBLE) <= 0:
+        break
+cv2.destroyWindow('answer_29_2')
+cv2.destroyAllWindow()
