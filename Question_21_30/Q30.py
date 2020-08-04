@@ -12,7 +12,7 @@ def affine(img, a, b, c, d, tx, ty):
     # get new image shape
     H_new = np.round(H * d).astype(np.int)
     W_new = np.round(W * a).astype(np.int)
-    out = np.zeros((H_new+1, W_new+1, C), dtype=np.float32)
+    out = np.zeros((H_new, W_new, C), dtype=np.float32)
 
     # get position of new image
     x_new = np.tile(np.arange(W_new), (H_new, 1))
@@ -23,13 +23,18 @@ def affine(img, a, b, c, d, tx, ty):
     x = np.round((d * x_new - b * y_new) / adbc).astype(np.int) - tx + 1
     y = np.round((-c * x_new + a * y_new) / adbc).astype(np.int) - ty + 1
 
-    x = np.minimum(np.maximum(x, 0), W + 1).astype(np.int)
-    y = np.minimum(np.maximum(y, 0), H + 1).astype(np.int)
+    # adjust center by affine
+    dcx = (x.max() + x.min()) // 2 - W // 2
+    dcy = (y.max() + y.min()) // 2 - H // 2
+
+    x -= dcx
+    y -= dcy
+
+    x = np.clip(x, 0, W + 1)
+    y = np.clip(y, 0, H + 1)
 
     # assgin pixcel to new image
     out[y_new, x_new] = img[y, x]
-
-    out = out[:H_new, :W_new]
     out = out.astype(np.uint8)
 
     return out
@@ -38,20 +43,14 @@ def affine(img, a, b, c, d, tx, ty):
 _img = cv2.imread("imori.jpg").astype(np.float32)
 
 # Affine
-out = affine(_img, a=1.3, b=0, c=0, d=0.8, tx=0, ty=0)
-out2 = affine(_img, a=1, b=0, c=0, d=1, tx=30, ty=-30)
+
+A = 30.
+theta = - np.pi * A / 180.
+
+out = affine(_img, a=np.cos(theta), b=-np.sin(theta), c=np.sin(theta), d=np.cos(theta), tx=0, ty=0)
 
 # Save result
-cv2.imwrite("answer_30_1.jpg", out)
-cv2.imshow("answer_30_1", out)
-while cv2.waitKey(100) != 27:# loop if not get ESC
-    if cv2.getWindowProperty('answer_30_1',cv2.WND_PROP_VISIBLE) <= 0:
-        break
-cv2.destroyWindow('answer_30_1')
-cv2.imwrite("answer_30_2.jpg", out2)
-cv2.imshow("answer_30_2", out2)
-while cv2.waitKey(100) != 27:# loop if not get ESC
-    if cv2.getWindowProperty('answer_30_2',cv2.WND_PROP_VISIBLE) <= 0:
-        break
-cv2.destroyWindow('answer_30_2')
-cv2.destroyAllWindow()
+cv2.imwrite("answer_30.jpg", out)
+cv2.imshow("answer_30", out)
+cv2.waitKey(0)
+cv2.destroyWindow('answer_30')
